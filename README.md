@@ -6,13 +6,7 @@ This project automates the deployment of a containerized application to **Amazon
 
 ## 📁 Project Structure
 
-.
-├── .github/
-│   └── workflows/
-│       ├── docker-build.yml         # GitHub Actions workflow: builds/pushes Docker image
-│       └── terraform-deploy.yml     # GitHub Actions workflow: deploys infra with Terraform
-├── terraform/                       # Terraform configuration: VPC, ECS, IAM, etc.
-└── application/                     # Your Dockerized Python (or other) app source code
+<pre> ```text . ├── .github/ │ └── workflows/ │ ├── docker-build.yml # CI: Builds and pushes Docker image to ECR │ └── terraform-deploy.yml # CI: Deploys AWS infrastructure via Terraform ├── terraform/ # Terraform code (ECS, VPC, IAM, etc.) └── application/ # Dockerized application source code ``` </pre>
 
 
 ---
