@@ -39,6 +39,9 @@ jobs:
     - name: Set image tag output
       id: vars
       run: echo "image_tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
     
     - name: Terraform Init & Apply
       working-directory: ./terraform
