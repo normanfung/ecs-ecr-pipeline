@@ -42,6 +42,11 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Plan (Debug)
+      run: terraform plan -out=tfplan
+      env:
+        TF_LOG: DEBUG
     
     - name: Terraform Init & Apply
       working-directory: ./terraform
