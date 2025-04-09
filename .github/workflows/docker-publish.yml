@@ -54,11 +54,10 @@ jobs:
     - name: Terraform Plan
       working-directory: ./terraform
       run: |
-        terraform plan \
-          -var-file="terraform.tfvars" \
-          -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
-          -var="ecr_repository_url=${{ env.ECR_REPO }}" \
-          -out=tfplan
+       terraform plan \
+        -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
+        -var="ecr_repository_url=${{ env.ECR_REPO }}" \
+        -out=tfplan
       env:
         TF_LOG: DEBUG
 
