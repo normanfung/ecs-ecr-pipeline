@@ -5,8 +5,12 @@ on:
     branches:
       - main
 
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO: 255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo
+
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +22,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -33,9 +37,9 @@ jobs:
         context: ./application
         push: true
         tags: |
-          255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo:${{ env.IMAGE_TAG_LATEST }}
-          255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo:${{ env.IMAGE_TAG_SHA }}
-    
+          ${{ env.ECR_REPO }}:${{ env.IMAGE_TAG_LATEST }}
+          ${{ env.ECR_REPO }}:${{ env.IMAGE_TAG_SHA }}
+
     - name: Set image tag output
       id: vars
       run: echo "image_tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
@@ -47,15 +51,17 @@ jobs:
       working-directory: ./terraform
       run: terraform init
 
-    - name: Terraform Plan (Debug)
+    - name: Terraform Plan
       working-directory: ./terraform
-      run: terraform plan -out=tfplan
+      run: |
+        terraform plan \
+          -var-file="terraform.tfvars" \
+          -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
+          -var="ecr_repository_url=${{ env.ECR_REPO }}" \
+          -out=tfplan
       env:
         TF_LOG: DEBUG
-    
+
     - name: Terraform Apply
       working-directory: ./terraform
-      run:
-        terraform apply -auto-approve \
-          -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
-          -var="ecr_repository_url=255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo"
+      run: terraform apply -auto-approve tfplan
