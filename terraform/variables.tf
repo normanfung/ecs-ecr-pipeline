@@ -7,7 +7,3 @@ variable "image_tag" {
   default = "latest"
 }
 
-variable "ecr_repository_url" {
-  type    = string
-  default = "255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo"
-}

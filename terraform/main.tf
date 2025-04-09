@@ -102,6 +102,10 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+data "aws_ecr_repository" "app_repo" {
+  name = "norman-3.4-repo"
+}
+
 resource "aws_ecs_task_definition" "app_task" {
   family                   = "my-app-task"
   requires_compatibilities = ["FARGATE"]
@@ -113,7 +117,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([
     {
       name  = "my-app"
-      image = "${var.ecr_repository_url}:${var.image_tag}"
+      image = "${data.aws_ecr_repository.app_repo.repository_url}:${var.image_tag}"
       portMappings = [
         {
           containerPort = 8080
