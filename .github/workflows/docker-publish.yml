@@ -43,15 +43,19 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
     - name: Terraform Plan (Debug)
+      working-directory: ./terraform
       run: terraform plan -out=tfplan
       env:
         TF_LOG: DEBUG
     
-    - name: Terraform Init & Apply
+    - name: Terraform Apply
       working-directory: ./terraform
-      run: |
-        terraform init
+      run:
         terraform apply -auto-approve \
           -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
           -var="ecr_repository_url=255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo"
