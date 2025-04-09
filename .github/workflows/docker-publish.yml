@@ -35,3 +35,15 @@ jobs:
         tags: |
           255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo:${{ env.IMAGE_TAG_LATEST }}
           255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo:${{ env.IMAGE_TAG_SHA }}
+    
+    - name: Set image tag output
+      id: vars
+      run: echo "image_tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+    
+    - name: Terraform Init & Apply
+      working-directory: ./terraform
+      run: |
+        terraform init
+        terraform apply -auto-approve \
+          -var="image_tag=${{ steps.vars.outputs.image_tag }}" \
+          -var="ecr_repository_url=255945442255.dkr.ecr.us-east-1.amazonaws.com/norman-3.4-repo"
