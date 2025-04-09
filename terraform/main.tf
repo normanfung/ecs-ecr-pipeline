@@ -2,6 +2,14 @@ provider "aws" {
   region = var.aws_region
 }
 
+terraform {
+  backend "s3" {
+    bucket = "sctp-ce9-tfstate"
+    key    = "norman-ce9-module3-lesson4.tfstate" # Replace the value of key to <your suggested name>.tfstat   
+    region = "us-east-1"
+  }
+}
+
 data "aws_availability_zones" "available" {}
 
 # VPC
@@ -105,7 +113,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([
     {
       name  = "my-app"
-      image = var.ecr_image_uri # example: 1234567890.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+      image = "${var.ecr_repository_url}:${var.image_tag}"
       portMappings = [
         {
           containerPort = 8080
