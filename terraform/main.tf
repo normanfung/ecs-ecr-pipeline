@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "sctp-ce9-tfstate"
-    key    = "norman-ce9-module3-lesson4.tfstate" # Replace the value of key to <your suggested name>.tfstat   
+    key    = "norman-ce9-module3-coaching2A.tfstate" # Replace the value of key to <your suggested name>.tfstat   
     region = "us-east-1"
   }
 }
