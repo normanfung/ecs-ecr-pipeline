@@ -1,25 +1,30 @@
 name: Terraform Deploy
 
+# This workflow is triggered manually via GitHub UI (workflow_dispatch)
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 
+# Define environment variables
 env:
-  TF_DIR: terraform
-  AWS_REGION: us-east-1
+  TF_DIR: terraform         # Directory where Terraform code lives
+  AWS_REGION: us-east-1     # AWS region for resource deployment
 
 jobs:
   terraform:
     name: Terraform Plan & Apply
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
 
+    # Default directory for all 'run' steps
     defaults:
       run:
         working-directory: ${{ env.TF_DIR }}
 
     steps:
+    # Step 1: Checkout the repository code
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # Step 2: Configure AWS credentials using secrets
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -27,21 +32,27 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
     
+    # Step 3: Setup Terraform CLI
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
+    # Step 4: Initialize the Terraform configuration
     - name: Terraform Init
       run: terraform init
 
+    # Step 5: Check for consistent Terraform code formatting
     - name: Terraform Format Check
       run: terraform fmt -check
 
+    # Step 6: Validate the Terraform configuration for syntax and internal consistency
     - name: Terraform Validate
       run: terraform validate
 
+    # Step 7: Create an execution plan and save it to a file
     - name: Terraform Plan
       run: terraform plan -out=tfplan
 
+    # Step 8: Apply the previously generated plan (only when triggered manually)
     - name: Terraform Apply
       if: github.event_name == 'workflow_dispatch'
       run: terraform apply -auto-approve tfplan
